@@ -6,7 +6,22 @@ let historyIndex = 0;
 
 const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
-// 👀 Funny command responses
+// 🎵 Sound effects using online links
+const sounds = {
+  type: new Audio("https://actions.google.com/sounds/v1/foley/typewriter_key.ogg"),
+  beep: new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"),
+  matrix: new Audio("https://actions.google.com/sounds/v1/ambiences/office_room_background.ogg"),
+  konami: new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg")
+};
+
+function playSound(name) {
+  if (sounds[name]) {
+    const sfx = sounds[name].cloneNode();
+    sfx.play();
+  }
+}
+
+// 👀 Funny command responses + hidden commands
 const commands = {
   help: [
     "Available commands:",
@@ -68,7 +83,12 @@ const commands = {
   ],
   "flip table": ["(╯°□°）╯︵ ┻━┻"],
   matrix: ["__MATRIX__"],
-  "run legacy.exe": ["Launching... Please wait... 🚀", "__RICKROLL__"]
+  "run legacy.exe": ["Launching... Please wait... 🚀", "__RICKROLL__"],
+
+  // 🔒 Hidden Easter Eggs
+  "i am the admin": ["🛡️ Access granted. Welcome, overlord."],
+  "xyzzy": ["A hollow voice says 'Plugh'. Nothing happens."],
+  "open the pod bay doors": ["I'm sorry, Dave. I'm afraid I can't do that."]
 };
 
 // 🔠 Typewriter effect with glitchiness
@@ -81,6 +101,8 @@ function typeLines(lines, i = 0) {
   let charIndex = 0;
   const text = lines[i];
   const interval = setInterval(() => {
+    playSound("type");
+
     if (Math.random() < 0.02) {
       line.textContent += getRandom(["@", "#", "%", "&", "*", "_"]);
     } else {
@@ -106,6 +128,8 @@ function handleCommand(cmd) {
   const line = document.createElement("div");
   line.innerHTML = `<span class="prompt">root@mainframe:~$</span> ${cmd}`;
   output.appendChild(line);
+
+  playSound("beep");
 
   const response = commands[cmd.toLowerCase()];
   if (response) {
@@ -147,6 +171,8 @@ input.addEventListener("keydown", (e) => {
 // 🟢 Matrix Mode
 function startMatrix() {
   let count = 0;
+  playSound("matrix");
+
   const interval = setInterval(() => {
     const line = document.createElement("div");
     line.style.color = "#0f0";
@@ -171,6 +197,35 @@ function rickroll() {
   if (!win) {
     typeLines(["😅 Pop-up blocked! Click here instead: https://youtu.be/dQw4w9WgXcQ"]);
   }
+}
+
+// 🎮 Konami Code
+const konamiCode = [
+  "ArrowUp", "ArrowUp",
+  "ArrowDown", "ArrowDown",
+  "ArrowLeft", "ArrowRight",
+  "ArrowLeft", "ArrowRight",
+  "b", "a"
+];
+
+let konamiIndex = 0;
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === konamiCode[konamiIndex]) {
+    konamiIndex++;
+    if (konamiIndex === konamiCode.length) {
+      konamiIndex = 0;
+      konamiActivated();
+    }
+  } else {
+    konamiIndex = 0;
+  }
+});
+
+function konamiActivated() {
+  typeLines(["👾 Konami Code accepted. Welcome to GOD MODE."]);
+  document.body.style.background = "linear-gradient(to bottom, #000, #0f0)";
+  playSound("konami");
 }
 
 // 🖥️ Boot Sequence
