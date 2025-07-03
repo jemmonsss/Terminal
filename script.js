@@ -1,58 +1,113 @@
 const input = document.getElementById("commandInput");
 const output = document.getElementById("output");
-const bootup = document.getElementById("bootup");
+
 let history = [];
 let historyIndex = 0;
 
+const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+// 👀 Funny command responses
 const commands = {
   help: [
     "Available commands:",
-    "help         - Show this help message",
-    "sudo love    - Get some love ❤️",
-    "cat life.txt - Show the meaning of life",
-    "hack google  - Attempt to hack Google (fail)",
-    "clear        - Clear the screen",
-    "self-destruct - Initiate self destruction (not recommended)",
+    "help              - Show this help message",
+    "sudo love         - Get some love ❤️",
+    "cat life.txt      - Show the meaning of life",
+    "hack google       - Attempt to hack Google",
+    "clear             - Clear the screen",
+    "self-destruct     - Don't. Just don't.",
+    "rm -rf /          - Dangerous... or is it?",
+    "fortune           - Get a deep thought",
+    "sudo make me a sandwich - You’ll see...",
+    "ascii doge        - Much wow. Very art.",
+    "exit              - Try to leave...",
+    "flip table        - Flip the table in rage",
+    "matrix            - Initiate matrix mode",
+    "run legacy.exe    - [REDACTED]"
   ],
+
   "sudo love": ["Access granted. ❤️ You are loved."],
   "cat life.txt": ["42. That’s it. That’s the whole file."],
   "hack google": [
     "Connecting to Google servers...",
-    "Bypassing firewall...",
-    "Just kidding. You can't hack Google 😏"
+    "Bypassing firewalls...",
+    "Launching nukes...",
+    "Just kidding 😏"
   ],
   clear: ["__CLEAR__"],
   "self-destruct": [
-    "Initiating self-destruction sequence...",
+    "⚠️ Self-destruction initiated...",
     "3...",
     "2...",
     "1...",
-    "💥 Just kidding. I'm still here."
-  ]
+    "💥 Nah, you're not getting rid of me that easy."
+  ],
+  "rm -rf /": [
+    "Deleting system32...",
+    "Removing your dignity...",
+    "jk. Nothing happened."
+  ],
+  fortune: [
+    "🐸: Time is a construct. Use it wisely.",
+    "🤡: Life is short. Use semicolons.",
+    "🐱: Meow means 'I love you' in cat."
+  ],
+  "sudo make me a sandwich": [
+    "Okay. 🥪 Done. You're welcome."
+  ],
+  "ascii doge": [
+    "┏━┓┏━┓┏━┓┏┓┏",
+    "┃┃┃┃┃┃┃┃┃┃┃┃",
+    "┃┃┃┃┃┃┃┃┃┃┃┃  ← wow",
+    "┃┃┃┃┃┃┃┃┃┃┃┃  ← much code",
+    "┗┛┗┛┗┛┗┛┗┛┗┛  ← such JS"
+  ],
+  exit: [
+    "You can check out any time you like...",
+    "But you can never leave. 🎸"
+  ],
+  "flip table": ["(╯°□°）╯︵ ┻━┻"],
+  matrix: ["__MATRIX__"],
+  "run legacy.exe": ["Launching... Please wait... 🚀", "__RICKROLL__"]
 };
 
+// 🔠 Typewriter effect with glitchiness
 function typeLines(lines, i = 0) {
   if (i >= lines.length) return;
+
   const line = document.createElement("div");
   output.appendChild(line);
 
   let charIndex = 0;
+  const text = lines[i];
   const interval = setInterval(() => {
-    line.textContent += lines[i][charIndex++];
-    if (charIndex === lines[i].length) {
+    if (Math.random() < 0.02) {
+      line.textContent += getRandom(["@", "#", "%", "&", "*", "_"]);
+    } else {
+      line.textContent += text[charIndex++];
+    }
+
+    if (charIndex === text.length) {
       clearInterval(interval);
-      typeLines(lines, i + 1);
+      if (text === "__RICKROLL__") {
+        rickroll();
+      } else if (text === "__MATRIX__") {
+        startMatrix();
+      } else {
+        typeLines(lines, i + 1);
+      }
       window.scrollTo(0, document.body.scrollHeight);
     }
-  }, 30);
+  }, 25);
 }
 
+// 📟 Handle commands
 function handleCommand(cmd) {
   const line = document.createElement("div");
   line.innerHTML = `<span class="prompt">root@mainframe:~$</span> ${cmd}`;
   output.appendChild(line);
 
-  const response = commands[cmd];
+  const response = commands[cmd.toLowerCase()];
   if (response) {
     if (response[0] === "__CLEAR__") {
       output.innerHTML = "";
@@ -64,6 +119,7 @@ function handleCommand(cmd) {
   }
 }
 
+// 🎹 Input listener
 input.addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
     const cmd = input.value.trim();
@@ -88,12 +144,39 @@ input.addEventListener("keydown", (e) => {
   }
 });
 
-// Boot-up sequence
-const bootLines = [
-  "Booting up terminal interface...",
-  "Loading AI joke modules...",
-  "Establishing secure connection to imagination...",
-  "Terminal ready. Type 'help' to begin."
-];
+// 🟢 Matrix Mode
+function startMatrix() {
+  let count = 0;
+  const interval = setInterval(() => {
+    const line = document.createElement("div");
+    line.style.color = "#0f0";
+    line.style.fontFamily = "monospace";
+    line.textContent = Array.from({ length: 80 }, () =>
+      String.fromCharCode(33 + Math.random() * 94)
+    ).join("");
+    output.appendChild(line);
+    window.scrollTo(0, document.body.scrollHeight);
 
-typeLines(bootLines);
+    count++;
+    if (count > 30) clearInterval(interval);
+  }, 100);
+}
+
+// 🪤 Rickroll trap
+function rickroll() {
+  const win = window.open(
+    "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?autoplay=1&mute=0",
+    "_blank"
+  );
+  if (!win) {
+    typeLines(["😅 Pop-up blocked! Click here instead: https://youtu.be/dQw4w9WgXcQ"]);
+  }
+}
+
+// 🖥️ Boot Sequence
+typeLines([
+  "💻 Initializing hacker terminal v3.0...",
+  "🧠 Loading sarcasm modules...",
+  "🤖 Injecting simulated intelligence...",
+  "✅ Ready. Type 'help' to begin your descent into madness."
+]);

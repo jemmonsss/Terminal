@@ -1,32 +1,44 @@
 body {
-  margin: 0;
-  background-color: #000;
+  background-color: #111;
   color: #0f0;
-  font-family: 'Courier New', monospace;
-  padding: 20px;
-  overflow-x: hidden;
+  font-family: 'Share Tech Mono', monospace;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .terminal {
-  max-width: 800px;
+  padding: 1rem;
+  max-width: 1000px;
   margin: auto;
-}
-
-.prompt {
-  color: #0f0;
+  height: 100vh;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .input-line {
   display: flex;
   align-items: center;
+  margin-top: 10px;
+}
+
+.prompt {
+  margin-right: 5px;
+  color: #0f0;
 }
 
 #commandInput {
-  background: none;
+  background: transparent;
   border: none;
   color: #0f0;
   font-family: inherit;
-  font-size: 1em;
+  font-size: 1rem;
   outline: none;
   width: 100%;
+}
+
+#output div {
+  line-height: 1.4;
+  white-space: pre-wrap;
 }
