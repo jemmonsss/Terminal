@@ -7,7 +7,7 @@ let historyIndex = 0;
 const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
 const sounds = {
-  execute: new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"), // changed sound
+  execute: new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"),
   type: new Audio("https://actions.google.com/sounds/v1/foley/typewriter_key.ogg"),
   matrix: new Audio("https://actions.google.com/sounds/v1/ambiences/office_room_background.ogg"),
   konami: new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg")
@@ -95,7 +95,7 @@ function typeLines(lines, i = 0) {
 
   const text = lines[i];
   let charIndex = 0;
-  const typeSFX = playSound("type", true); // Loop typewriter while typing
+  const typeSFX = playSound("type", true); // loop while typing
 
   const interval = setInterval(() => {
     line.textContent += text[charIndex++];
@@ -161,21 +161,54 @@ input.addEventListener("keydown", (e) => {
 });
 
 function startMatrix() {
-  let count = 0;
-  playSound("matrix");
+  const matrixCanvas = document.createElement("canvas");
+  matrixCanvas.style.position = "fixed";
+  matrixCanvas.style.top = "0";
+  matrixCanvas.style.left = "0";
+  matrixCanvas.style.width = "100%";
+  matrixCanvas.style.height = "100%";
+  matrixCanvas.style.pointerEvents = "none";
+  matrixCanvas.style.zIndex = "1000";
+  document.body.appendChild(matrixCanvas);
 
-  const interval = setInterval(() => {
-    const line = document.createElement("div");
-    line.style.color = "#0f0";
-    line.style.fontFamily = "monospace";
-    line.textContent = Array.from({ length: 80 }, () =>
-      String.fromCharCode(33 + Math.random() * 94)
-    ).join("");
-    output.appendChild(line);
-    window.scrollTo(0, document.body.scrollHeight);
+  const ctx = matrixCanvas.getContext("2d");
+  matrixCanvas.width = window.innerWidth;
+  matrixCanvas.height = window.innerHeight;
 
-    if (++count > 30) clearInterval(interval);
-  }, 100);
+  const letters = "アァイィウエカガキギクケサザシジスズセソタチッツナニヌネノハヒフヘホマミムメモヤユヨラリルレロワンABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$%#*+@!".split("");
+  const fontSize = 14;
+  const columns = Math.floor(matrixCanvas.width / fontSize);
+  const drops = Array(columns).fill(1);
+
+  let animationId;
+  const draw = () => {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+    ctx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+
+    ctx.fillStyle = "#0F0";
+    ctx.font = fontSize + "px monospace";
+
+    for (let i = 0; i < drops.length; i++) {
+      const char = letters[Math.floor(Math.random() * letters.length)];
+      ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+      drops[i]++;
+      if (drops[i] * fontSize > matrixCanvas.height && Math.random() > 0.975) {
+        drops[i] = 0;
+      }
+    }
+
+    animationId = requestAnimationFrame(draw);
+  };
+
+  const bgSound = playSound("matrix", true);
+  draw();
+
+  setTimeout(() => {
+    cancelAnimationFrame(animationId);
+    matrixCanvas.remove();
+    bgSound.pause();
+    bgSound.remove();
+  }, 10000);
 }
 
 function rickroll() {
