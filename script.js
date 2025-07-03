@@ -6,22 +6,23 @@ let historyIndex = 0;
 
 const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
-// 🎵 Sound effects using better links
 const sounds = {
+  execute: new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"), // changed sound
   type: new Audio("https://actions.google.com/sounds/v1/foley/typewriter_key.ogg"),
-  beep: new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg"), // ✅ better beep
   matrix: new Audio("https://actions.google.com/sounds/v1/ambiences/office_room_background.ogg"),
   konami: new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg")
 };
 
-function playSound(name) {
+function playSound(name, loop = false) {
   if (sounds[name]) {
     const sfx = sounds[name].cloneNode();
-    sfx.play().catch(() => {}); // silence autoplay error
+    sfx.loop = loop;
+    sfx.volume = 0.4;
+    sfx.play();
+    return sfx;
   }
 }
 
-// 👀 Funny command responses + hidden commands
 const commands = {
   help: [
     "Available commands:",
@@ -40,7 +41,6 @@ const commands = {
     "matrix            - Initiate matrix mode",
     "run legacy.exe    - [REDACTED]"
   ],
-
   "sudo love": ["Access granted. ❤️ You are loved."],
   "cat life.txt": ["42. That’s it. That’s the whole file."],
   "hack google": [
@@ -67,9 +67,7 @@ const commands = {
     "🤡: Life is short. Use semicolons.",
     "🐱: Meow means 'I love you' in cat."
   ],
-  "sudo make me a sandwich": [
-    "Okay. 🥪 Done. You're welcome."
-  ],
+  "sudo make me a sandwich": ["Okay. 🥪 Done. You're welcome."],
   "ascii doge": [
     "┏━┓┏━┓┏━┓┏┓┏",
     "┃┃┃┃┃┃┃┃┃┃┃┃",
@@ -84,33 +82,30 @@ const commands = {
   "flip table": ["(╯°□°）╯︵ ┻━┻"],
   matrix: ["__MATRIX__"],
   "run legacy.exe": ["Launching... Please wait... 🚀", "__RICKROLL__"],
-
-  // 🔒 Hidden Easter Eggs
   "i am the admin": ["🛡️ Access granted. Welcome, overlord."],
   "xyzzy": ["A hollow voice says 'Plugh'. Nothing happens."],
   "open the pod bay doors": ["I'm sorry, Dave. I'm afraid I can't do that."]
 };
 
-// 🔠 Typewriter effect with glitchiness
 function typeLines(lines, i = 0) {
   if (i >= lines.length) return;
 
   const line = document.createElement("div");
   output.appendChild(line);
 
-  let charIndex = 0;
   const text = lines[i];
+  let charIndex = 0;
+  const typeSFX = playSound("type", true); // Loop typewriter while typing
+
   const interval = setInterval(() => {
-    playSound("type");
+    line.textContent += text[charIndex++];
+    window.scrollTo(0, document.body.scrollHeight);
 
-    if (Math.random() < 0.02) {
-      line.textContent += getRandom(["@", "#", "%", "&", "*", "_"]);
-    } else {
-      line.textContent += text[charIndex++];
-    }
-
-    if (charIndex === text.length) {
+    if (charIndex >= text.length) {
       clearInterval(interval);
+      typeSFX.pause();
+      typeSFX.remove();
+
       if (text === "__RICKROLL__") {
         rickroll();
       } else if (text === "__MATRIX__") {
@@ -118,18 +113,16 @@ function typeLines(lines, i = 0) {
       } else {
         typeLines(lines, i + 1);
       }
-      window.scrollTo(0, document.body.scrollHeight);
     }
-  }, 25);
+  }, 30);
 }
 
-// 📟 Handle commands
 function handleCommand(cmd) {
   const line = document.createElement("div");
   line.innerHTML = `<span class="prompt">root@mainframe:~$</span> ${cmd}`;
   output.appendChild(line);
 
-  playSound("beep");
+  playSound("execute");
 
   const response = commands[cmd.toLowerCase()];
   if (response) {
@@ -143,7 +136,6 @@ function handleCommand(cmd) {
   }
 }
 
-// 🎹 Input listener
 input.addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
     const cmd = input.value.trim();
@@ -168,7 +160,6 @@ input.addEventListener("keydown", (e) => {
   }
 });
 
-// 🟢 Matrix Mode
 function startMatrix() {
   let count = 0;
   playSound("matrix");
@@ -183,12 +174,10 @@ function startMatrix() {
     output.appendChild(line);
     window.scrollTo(0, document.body.scrollHeight);
 
-    count++;
-    if (count > 30) clearInterval(interval);
+    if (++count > 30) clearInterval(interval);
   }, 100);
 }
 
-// 🪤 Rickroll trap
 function rickroll() {
   const win = window.open(
     "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?autoplay=1&mute=0",
@@ -199,7 +188,6 @@ function rickroll() {
   }
 }
 
-// 🎮 Konami Code
 const konamiCode = [
   "ArrowUp", "ArrowUp",
   "ArrowDown", "ArrowDown",
@@ -228,7 +216,6 @@ function konamiActivated() {
   playSound("konami");
 }
 
-// 🖥️ Boot Sequence
 typeLines([
   "💻 Initializing hacker terminal v3.0...",
   "🧠 Loading sarcasm modules...",
