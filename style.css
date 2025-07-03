@@ -1,0 +1,32 @@
+body {
+  margin: 0;
+  background-color: #000;
+  color: #0f0;
+  font-family: 'Courier New', monospace;
+  padding: 20px;
+  overflow-x: hidden;
+}
+
+.terminal {
+  max-width: 800px;
+  margin: auto;
+}
+
+.prompt {
+  color: #0f0;
+}
+
+.input-line {
+  display: flex;
+  align-items: center;
+}
+
+#commandInput {
+  background: none;
+  border: none;
+  color: #0f0;
+  font-family: inherit;
+  font-size: 1em;
+  outline: none;
+  width: 100%;
+}
