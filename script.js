@@ -6,10 +6,10 @@ let historyIndex = 0;
 
 const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
-// 🎵 Sound effects using online links
+// 🎵 Sound effects using better links
 const sounds = {
   type: new Audio("https://actions.google.com/sounds/v1/foley/typewriter_key.ogg"),
-  beep: new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"),
+  beep: new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg"), // ✅ better beep
   matrix: new Audio("https://actions.google.com/sounds/v1/ambiences/office_room_background.ogg"),
   konami: new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg")
 };
@@ -17,7 +17,7 @@ const sounds = {
 function playSound(name) {
   if (sounds[name]) {
     const sfx = sounds[name].cloneNode();
-    sfx.play();
+    sfx.play().catch(() => {}); // silence autoplay error
   }
 }
 
